@@ -1,26 +1,28 @@
---- 
-abstract: a flexible POE-based RADIUS client
-author: 
-  - Chris Williams <chris@bingosnet.co.uk>
-build_requires: 
+---
+abstract: 'a flexible POE-based RADIUS client'
+author:
+  - 'Chris Williams <chris@bingosnet.co.uk>'
+build_requires:
   Test::More: 0.47
 distribution_type: module
-generated_by: Module::Install version 0.68
+generated_by: 'Module::Install version 0.71'
 license: perl
-meta-spec: 
+meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.3.html
   version: 1.3
 name: POE-Component-Client-RADIUS
-no_index: 
-  directory: 
+no_index:
+  directory:
     - inc
     - t
-requires: 
+requires:
   Carp: 0
   IO::Socket::INET: 0
   Math::Random: 0.69
   Net::Radius::Dictionary: 1.55
   Net::Radius::Packet: 1.55
   POE: 0.9999
+  POSIX: 0
   Socket: 0
-version: 0.01
+tests: 't/*.t xt/*.t'
+version: 0.02

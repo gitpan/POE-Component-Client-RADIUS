@@ -1,6 +1,7 @@
 package POE::Component::Client::RADIUS;
 
 use strict;
+use warnings;
 use Carp;
 use POE;
 use IO::Socket::INET;
@@ -10,7 +11,7 @@ use Math::Random;
 use POSIX qw(uname);
 use vars qw($VERSION);
 
-$VERSION = '0.01';
+$VERSION = '0.02';
 
 use constant DATAGRAM_MAXLEN => 4096;
 use constant RADIUS_PORT => 1812;
