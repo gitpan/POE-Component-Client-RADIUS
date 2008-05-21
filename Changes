@@ -1,6 +1,10 @@
 Changelog for POE-Component-Client-RADIUS
 =========================================
 
+0.04	Wed May 21 10:26:47 BST 2008
+	- removed kwalitee test
+	- added license information
+
 0.02	Thu Apr  3 10:41:23 BST 2008
 	- Moved author tests to xt/
 	- Kwalitee fixes.

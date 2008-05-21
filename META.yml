@@ -5,7 +5,7 @@ author:
 build_requires:
   Test::More: 0.47
 distribution_type: module
-generated_by: 'Module::Install version 0.71'
+generated_by: 'Module::Install version 0.73'
 license: perl
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.3.html
@@ -13,8 +13,11 @@ meta-spec:
 name: POE-Component-Client-RADIUS
 no_index:
   directory:
+    - xt
     - inc
     - t
+    - examples
+    - examples
 requires:
   Carp: 0
   IO::Socket::INET: 0
@@ -24,5 +27,6 @@ requires:
   POE: 0.9999
   POSIX: 0
   Socket: 0
+  perl: 5.000
 tests: 't/*.t xt/*.t'
-version: 0.02
+version: 0.04
