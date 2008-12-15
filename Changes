@@ -1,6 +1,9 @@
 Changelog for POE-Component-Client-RADIUS
 =========================================
 
+0.06	Mon Dec 15 14:50:13 GMT 2008
+	- Determine our own IP address a bit more intelligently.
+
 0.04	Wed May 21 10:26:47 BST 2008
 	- removed kwalitee test
 	- added license information

@@ -58,6 +58,7 @@ sub _get_datagram {
   my $p = Net::Radius::Packet->new( $dict, $message );
   ok( $p->code eq 'Access-Request', $p->code );
   ok( $p->attr('User-Name') eq 'bingos', 'User-Name' );
+  diag( $p->attr('NAS-IP-Address'), "\n" );
   ok( $p->password('bogoff') eq 'moocow', 'Password' );
   my $rp = new Net::Radius::Packet $dict;
   $rp->set_identifier($p->identifier);

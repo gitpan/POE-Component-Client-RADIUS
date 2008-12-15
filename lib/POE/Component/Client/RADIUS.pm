@@ -8,10 +8,9 @@ use IO::Socket::INET;
 use Net::Radius::Dictionary;
 use Net::Radius::Packet;
 use Math::Random;
-use POSIX qw(uname);
 use vars qw($VERSION);
 
-$VERSION = '0.04';
+$VERSION = '0.06';
 
 use constant DATAGRAM_MAXLEN => 4096;
 use constant RADIUS_PORT => 1812;
@@ -135,7 +134,6 @@ sub shutdown {
 
 sub _start {
   my ($kernel,$self,$sender,$command,@args) = @_[KERNEL,OBJECT,SENDER,ARG0..$#_];
-  $self->{myip} = join '.',unpack "C4",gethostbyname((uname)[1]);
   $self->{session_id} = $_[SESSION]->ID();
   if ( $command eq 'spawn' ) {
      my $opts = { @args };
@@ -217,7 +215,7 @@ sub _command {
      $req->set_attr('Framed-Protocol' => 'PPP');
      $req->set_attr('NAS-Port' => 1234);
      $req->set_attr('NAS-Identifier' => 'PoCoClientRADIUS');
-     $req->set_attr('NAS-IP-Address' => $self->{myip});
+     $req->set_attr('NAS-IP-Address' => _my_address( $args->{server} ) );
      $req->set_attr('Called-Station-Id' => '0000');
      $req->set_attr('Calling-Station-Id' => '01234567890');
      delete $args->{attributes}->{'User-Name'};
@@ -379,6 +377,17 @@ sub _bigrand {
   my @numbers;
   push @numbers, scalar random_uniform_integer(1,0,65536) for 0 .. 7;
   pack "n8", @numbers;
+}
+
+sub _my_address {
+  my $remote = shift || '198.41.0.4';
+  my $socket = IO::Socket::INET->new(
+        Proto       => 'udp',
+        PeerAddr    => $remote,
+        PeerPort    => 53,
+  );
+  return unless $socket;
+  return $socket->sockhost;
 }
 
 1;
