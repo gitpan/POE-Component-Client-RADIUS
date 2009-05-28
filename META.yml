@@ -3,9 +3,12 @@ abstract: 'a flexible POE-based RADIUS client'
 author:
   - 'Chris Williams <chris@bingosnet.co.uk>'
 build_requires:
+  ExtUtils::MakeMaker: 6.42
   Test::More: 0.47
+configure_requires:
+  ExtUtils::MakeMaker: 6.42
 distribution_type: module
-generated_by: 'Module::Install version 0.77'
+generated_by: 'Module::Install version 0.91'
 license: perl
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
@@ -13,10 +16,14 @@ meta-spec:
 name: POE-Component-Client-RADIUS
 no_index:
   directory:
-    - xt
+    - examples
     - inc
     - t
-    - examples
+    - xt
+provides:
+  POE::Component::Client::RADIUS:
+    file: lib/POE/Component/Client/RADIUS.pm
+    version: 1.00
 requires:
   Math::Random: 0.69
   Net::Radius::Dictionary: 1.55
@@ -24,5 +31,7 @@ requires:
   POE: 0.9999
   perl: 5.6.0
 resources:
+  homepage: http://github.com/bingos/poe-component-client-radius/tree
   license: http://dev.perl.org/licenses/
-version: 0.06
+  repository: git://github.com/bingos/poe-component-client-radius.git
+version: 1.00
