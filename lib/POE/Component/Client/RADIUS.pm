@@ -1,4 +1,6 @@
 package POE::Component::Client::RADIUS;
+$POE::Component::Client::RADIUS::VERSION = '1.04';
+#ABSTRACT: a flexible POE-based RADIUS client
 
 use strict;
 use warnings;
@@ -8,9 +10,6 @@ use IO::Socket::INET;
 use Net::Radius::Dictionary;
 use Net::Radius::Packet;
 use Math::Random;
-use vars qw($VERSION);
-
-$VERSION = '1.02';
 
 use constant DATAGRAM_MAXLEN => 4096;
 use constant RADIUS_PORT => 1812;
@@ -113,7 +112,9 @@ sub _create {
 
 sub _allocate_identifier {
   while (1) {
-    last unless exists $active_identifiers{ ++$current_id };
+    ++$current_id;
+    $current_id = 1 if $current_id > 255;
+    last unless exists $active_identifiers{ $current_id };
   }
   return $active_identifiers{$current_id} = $current_id;
 }
@@ -295,7 +296,7 @@ sub _get_datagram {
      $kernel->yield( '_dispatch', $data );
      return;
   }
-  my $reply = { 
+  my $reply = {
      map { ( $_, $resp->attr($_) ) } $resp->attributes()
   };
   $reply->{Code} = $resp->code;
@@ -390,85 +391,94 @@ sub _my_address {
   return $socket->sockhost;
 }
 
-1;
+qq[Sound of crickets];
+
 __END__
+
+=pod
+
+=encoding UTF-8
 
 =head1 NAME
 
 POE::Component::Client::RADIUS - a flexible POE-based RADIUS client
+
+=head1 VERSION
+
+version 1.04
 
 =head1 SYNOPSIS
 
    use strict;
    use Net::Radius::Dictionary;
    use POE qw(Component::Client::RADIUS);
-   
+
    my $username = 'bingos';
    my $password = 'moocow';
    my $secret = 'bogoff';
-   
+
    my $server = '192.168.1.1';
-   
+
    my $dictionary = '/etc/radius/dictionary';
-   
+
    my $dict = Net::Radius::Dictionary->new( $dictionary );
-   
+
    die "No dictionary found\n" unless $dict;
-   
+
    my $radius = POE::Component::Client::RADIUS->spawn( dict => $dict );
-   
+
    POE::Session->create(
      package_states => [
-   	'main' => [qw(_start _auth)],
+       'main' => [qw(_start _auth)],
      ],
    );
-   
+
    $poe_kernel->run();
    exit 0;
-   
+
    sub _start {
-     $poe_kernel->post( 
-   	$radius->session_id(), 
-   	'authenticate',
-   	event => '_auth',
-   	username => $username,
-   	password => $password,
-   	server => $server,
-   	secret => $secret,
+     $poe_kernel->post(
+      $radius->session_id(),
+      'authenticate',
+      event => '_auth',
+      username => $username,
+      password => $password,
+      server => $server,
+	    secret => $secret,
      );
      return;
    }
-   
+
    sub _auth {
      my ($kernel,$sender,$data) = @_[KERNEL,SENDER,ARG0];
-   
+
      # Something went wrong
      if ( $data->{error} ) {
-   	warn $data->{error}, "\n";
-   	$kernel->post( $sender, 'shutdown' );
-   	return;
+       warn $data->{error}, "\n";
+       $kernel->post( $sender, 'shutdown' );
+       return;
      }
-   
+
      # There was a timeout getting a response back from the RADIUS server
      if ( $data->{timeout} ) {
-   	warn $data->{timeout}, "\n";
-   	$kernel->post( $sender, 'shutdown' );
-   	return;
+       warn $data->{timeout}, "\n";
+       $kernel->post( $sender, 'shutdown' );
+       return;
      }
-   
+
      # Okay we got a response
      if ( $data->{response}->{Code} eq 'Access-Accept' ) {
-   	print "Yay, we were authenticated\n";
+       print "Yay, we were authenticated\n";
      }
      elsif ( $data->{response}->{Code} eq 'Access-Reject' ) {
-   	print "Boo, the server didn't like us\n";
+       print "Boo, the server didn't like us\n";
      }
      else {
-   	print $data->{response}->{Code}, "\n";
+       print $data->{response}->{Code}, "\n";
      }
-   
+
      print join ' ', $_, $data->{response}->{$_}, "\n" for keys %{ $data->{response} };
-   
+
      return;
    }
 
@@ -620,16 +630,6 @@ the contents of the 'response' hashref for the status of authenication requests 
 
 There are bound to be bugs in this. Please report any you find via C<bug-POE-Component-Client-RADIUS@rt.cpan.org>.
 
-=head1 AUTHOR
-
-Chris C<BinGOs> Williams <chris@bingosnet.co.uk>
-
-=head1 LICENSE
-
-Copyright E<copy> Chris Williams
-
-This module may be used, modified, and distributed under the same terms as Perl itself. Please see the license that came with your Perl distribution for details.
-
 =head1 SEE ALSO
 
 L<POE>
@@ -639,5 +639,16 @@ L<http://en.wikipedia.org/wiki/RADIUS>
 L<http://www.faqs.org/rfcs/rfc2138.html>
 
 L<http://www.faqs.org/rfcs/rfc2866.html>
+
+=head1 AUTHOR
+
+Chris Williams <chris@bingosnet.co.uk>
+
+=head1 COPYRIGHT AND LICENSE
+
+This software is copyright (c) 2014 by Chris Williams.
+
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
 
 =cut
